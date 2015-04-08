@@ -1,0 +1,16 @@
+<!-- index.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>History of Searches!</title>
+</head>
+<body>
+<h1>Searches that have been made!</h1>
+<ul>
+<%Object.keys(searches).forEach(function(key){%>
+  <li><a href="/show/<%=searches[key].id%>"><%-searches[key].query%>></a></li>
+  <%});%>
+</ul>
+<a href="/search/new">Make a new Search</a>
+</body>
+</html>

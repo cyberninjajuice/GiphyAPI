@@ -1,0 +1,16 @@
+<!-- show.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>You searched for: <%-search.query%></title>
+</head>
+<body>
+<h1> How customers relate to: <%-search.query%></h1>
+<ul>
+<%for (var i=0;i<search.images;i++){ %>
+  <li><img src="<%=search.images[i]%>"</li>
+  <%}%>
+</ul>
+
+</body>
+</html>

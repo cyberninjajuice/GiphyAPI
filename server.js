@@ -1,7 +1,7 @@
 //server.js
 var ejs = require("ejs");
 var express = require("express");
-
+var request = require("request");
 var app = express();
 app.set("view_engine", "ejs");
 
@@ -20,46 +20,76 @@ function Search(query) {
   this.id = counter;
   this.query = query;
 
-  function this.access(this.query) {
+  this.access = function() {
     var searched = this.query.toString().trim().split(" ");
-    searched.join("+");
-    var this.urlSearch = ejs.render("http://api.giphy.com/v1/gifs/search?q=<%-searched%>api_key=dc6zaTOxFJmzC", {
+    searched = searched.join("+");
+    console.log(searched);
+    this.urlSearch = ejs.render("http://api.giphy.com/v1/gifs/search?q=<%-searched%>&api_key=dc6zaTOxFJmzC", {
       searched: searched
     });
-    request(this.urlSearch, function(req, res) {
-      console.log(body);
+    console.log(this.urlSearch);
+    request(this.urlSearch, function(err, response, body) {
+      //console.log(body);
+      var parsed = JSON.parse(body).data;
+      this.images = [];
+      console.log(this.image);
+
+      for (var i = 0; i < parsed.length; i++) {
+        this.images.push(parsed[i].images.fixed_height.url);
+      }
+      console.log(this.images);
     });
+
   };
-  this.image=this.access(this.query);
   counter++;
-};
-var sample = new Search("puppies");
+}
+var sample = new Search("funny cat");
+sample.access();
+console.log(sample.query);
 
 var searches = {
   0: sample,
 };
-app.get("/", function(req, res) {
-  res.redirect("/search");
-});
-app.get("/search", function(req, res) {
-  res.render("search.ejs");
-});
-app.post("/search", function(req, res) {
-  var newSearch = new Search(req.body.query);
-  searches[newSearch.id] = newSearch;
-  res.redirect("/show");
-});
 
-app.get("/search", function(req, res) {
-  request("http://ron-swanson-quotes.herokuapp.com/quotes", function(err, response, body) {
-    console.log(body);
-    var quote = JSON.parse(body).quote;
-    var data = ejs.render("show.ejs", {
-      quote: quote
-    });
-    res.send(data);
+app.get("/", function(req, res) {
+  res.redirect("/searches");
+});
+app.get("/searches", function(req, res) {
+  res.render("index.ejs", {
+    searches: searches
+  });
+})
+app.get("/search/new", function(req, res) {
+  console.log(searches);
+  res.render("search.ejs", {
+    searches: searches
   });
 });
+app.post("/searches", function(req, res) {
+  var newSearch = new Search(req.body.query);
+  console.log(req.body.query);
+  searches[newSearch.id] = newSearch;
+  res.redirect("/search/" + newSearch.id);
+});
+
+app.get("/show/:id", function(req, res) {
+  var search = searches[parseInt(req.params.id, 10)];
+  console.log("params" + search);
+  res.render("show.ejs", {
+    search: search
+  });
+});
+
+// app.get("/search", function(req, res) {
+//   request("http://ron-swanson-quotes.herokuapp.com/quotes", function(err, response, body) {
+//     console.log(body);
+//     var quote = JSON.parse(body).quote;
+//     var data = ejs.render("show.ejs", {
+//       quote: quote
+//     });
+//     res.send(data);
+//   });
+// });
 
 var port = 3000;
 
