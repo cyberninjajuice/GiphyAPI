@@ -3,14 +3,22 @@
 <html>
 <head>
   <title>You searched for: <%-search.query%></title>
+  <style>
+  body{
+    margin:0 auto;
+    }
+  ul{
+    display:flex;
+    flex-wrap:wrap;
+    }
+  </style>
 </head>
 <body>
 <h1> How customers relate to: <%-search.query%></h1>
 <ul>
-<%for (var i=0;i<search.images;i++){ %>
-  <li><img src="<%=search.images[i]%>"</li>
-  <%}%>
+<%for (var i=0;i<search.delay().length;i++){ %>
+<li><img src="<%=search.delay()[i]%>"</li>
+<%}%>
 </ul>
-
 </body>
 </html>

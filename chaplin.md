@@ -36,3 +36,7 @@ Create a new repo on github with your app and all associated files. Include a re
 In a follow up phone call, Charlie mentions:
 
 > ...if you have the time, I would like to be able to bookmark or 'pin' pictures from search terms. Sometimes I'll want to reference a particular gif in my report to clients as an example.
+> <%for (var i=0;i<search.images;i++){ %>
+<li><img src="<%=search.images[i]%>"</li>
+<%}%>
+</ul>

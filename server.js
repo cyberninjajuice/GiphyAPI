@@ -3,6 +3,7 @@ var ejs = require("ejs");
 var express = require("express");
 var request = require("request");
 var app = express();
+var fs = require("fs");
 app.set("view_engine", "ejs");
 
 var bodyParser = require("body-parser");
@@ -19,6 +20,7 @@ var counter = 0;
 function Search(query) {
   this.id = counter;
   this.query = query;
+  var images = [];
 
   this.access = function() {
     var searched = this.query.toString().trim().split(" ");
@@ -31,15 +33,22 @@ function Search(query) {
     request(this.urlSearch, function(err, response, body) {
       //console.log(body);
       var parsed = JSON.parse(body).data;
-      this.images = [];
-      console.log(this.image);
+      console.log(images);
 
       for (var i = 0; i < parsed.length; i++) {
-        this.images.push(parsed[i].images.fixed_height.url);
+        images.push(parsed[i].images.fixed_height.url);
       }
-      console.log(this.images);
+      console.log(images);
     });
-
+  };
+  this.access();
+  this.delay = function() {
+    if (images.length === 0) {
+      setTimeout(this.delay, 100);
+    } else {
+      console.log(images);
+      return(images);
+    }
   };
   counter++;
 }
@@ -54,17 +63,20 @@ var searches = {
 app.get("/", function(req, res) {
   res.redirect("/searches");
 });
+
 app.get("/searches", function(req, res) {
   res.render("index.ejs", {
     searches: searches
   });
-})
+});
+
 app.get("/search/new", function(req, res) {
   console.log(searches);
   res.render("search.ejs", {
     searches: searches
   });
 });
+
 app.post("/searches", function(req, res) {
   var newSearch = new Search(req.body.query);
   console.log(req.body.query);
